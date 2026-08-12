@@ -28,10 +28,10 @@ options:
 schema:
   linhas_monitoradas:
     - str
-  ponto_onibus_lat: "float(-90.0, 90.0)"
-  ponto_onibus_lon: "float(-180.0, 180.0)"
-  fator_curvas: "float(1.0, 5.0)"
-  velocidade_media_onibus: "float(1.0, 100.0)"
-  confirmacoes_necessarias: "int(1, 10)"
-  tempo_retencao_memoria: "int(60, 86400)"
+  ponto_onibus_lat: "float(-90.0,90.0)"
+  ponto_onibus_lon: "float(-180.0,180.0)"
+  fator_curvas: "float(1.0,5.0)"
+  velocidade_media_onibus: "float(1.0,100.0)"
+  confirmacoes_necessarias: "int(1,10)"
+  tempo_retencao_memoria: "int(60,86400)"
   intervalo_de_atualizacao_segundos: "int(20,)"

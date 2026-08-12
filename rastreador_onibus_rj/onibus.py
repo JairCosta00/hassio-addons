@@ -29,7 +29,10 @@ if os.path.exists(ARQUIVO_OPCOES):
     try:
         with open(ARQUIVO_OPCOES, 'r', encoding='utf-8') as f:
             opcoes_usuario = json.load(f)
-        logging.info("Configurações do usuário carregadas com sucesso.")
+        
+        # --- ADICIONE ESTA LINHA AQUI EMBAIXO ---
+        logging.info(f"DADOS RECEBIDOS DO PAINEL: {opcoes_usuario}")
+        
     except Exception as e:
         logging.error(f"Erro ao ler configurações do Add-on: {e}. Usando valores de emergência.")
 

@@ -1,7 +1,8 @@
 name: "Rastreador de Ônibus RJ"
-version: "2.0.5"
+version: "2.0.6"
 slug: "rastreador_onibus"
-description: "Rastreador inteligente de frota da Mobilidade Rio"
+description: "Rastreia os ônibus SPPO e BRT da Mobilidade Rio em tempo real."
+url: "https://github.com/JairCosta00/hassio-addons"
 arch:
   - aarch64
   - amd64

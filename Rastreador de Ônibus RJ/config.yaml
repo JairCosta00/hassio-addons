@@ -1,5 +1,5 @@
 name: "Rastreador de Ônibus RJ"
-version: "2.0.6"
+version: "2.0.7"
 slug: "rastreador_onibus"
 description: "Rastreia os ônibus SPPO e BRT da Mobilidade Rio em tempo real."
 url: "https://github.com/JairCosta00/hassio-addons"
@@ -10,6 +10,8 @@ arch:
 startup: "application"
 boot: "auto"
 homeassistant_api: true
+services:
+  - mqtt:need
 
 # Valores padrão
 options:
@@ -26,10 +28,10 @@ options:
 schema:
   linhas_monitoradas:
     - str
-  Ponto_onibus_lat: float
-  Ponto_onibus_lon: float
-  fator_curvas: float
-  velocidade_media_onibus: float
-  confirmacoes_necessarias: int
-  tempo_retencao_memoria: int
-  intervalo_de_atualizacao_segundos: int
+  ponto_onibus_lat: "float(-90.0, 90.0)"
+  ponto_onibus_lon: "float(-180.0, 180.0)"
+  fator_curvas: "float(1.0, 5.0)"
+  velocidade_media_onibus: "float(1.0, 100.0)"
+  confirmacoes_necessarias: "int(1, 10)"
+  tempo_retencao_memoria: "int(60, 86400)"
+  intervalo_de_atualizacao_segundos: "int(20,)"

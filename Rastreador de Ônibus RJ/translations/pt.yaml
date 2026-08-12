@@ -1,0 +1,25 @@
+configuration:
+  linhas_monitoradas:
+    name: "Linhas Monitoradas"
+    description: "Adicione as linhas que deseja rastrear (Ex: 371, 810). Deixe vazio para rastrear todas."
+  ponto_onibus_lat:
+    name: "Latitude do Ponto de Ônibus"
+    description: "Sua coordenada exata do ponto para calcular o tempo de chegada."
+  ponto_onibus_lon:
+    name: "Longitude do Ponto de Ônibus"
+    description: "Sua coordenada exata do ponto para calcular o tempo de chegada."
+  fator_curvas:
+    name: "Fator de Curvas"
+    description: "Ajuste matemático (padrão: 1.4) para compensar o trajeto curvo das ruas. Aumente se o tempo de chegada estiver caindo rápido demais."
+  velocidade_media_onibus:
+    name: "Velocidade Média (km/h)"
+    description: "Usada para estimar o tempo de chegada quando o ônibus usa o cálculo de linha reta (padrão: 18.0)."
+  confirmacoes_necessarias:
+    name: "Confirmações de Sentido"
+    description: "Quantas leituras do GPS o sistema aguarda para ter certeza que o ônibus mudou de direção (padrão: 2)."
+  tempo_retencao_memoria:
+    name: "Tempo de Retenção (segundos)"
+    description: "Tempo máximo para guardar o histórico do ônibus caso o GPS dele pare de enviar sinal (padrão: 3600)."
+  intervalo_de_atualizacao_segundos:
+    name: "Intervalo de Atualização"
+    description: "Tempo (em segundos) que o sistema espera antes de baixar novos dados da Mobilidade Rio (padrão: 30)."

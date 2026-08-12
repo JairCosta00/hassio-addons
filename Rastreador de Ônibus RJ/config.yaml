@@ -1,0 +1,34 @@
+name: "Rastreador de Ônibus RJ"
+version: "2.0.5"
+slug: "rastreador_onibus"
+description: "Rastreador inteligente de frota da Mobilidade Rio"
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: "application"
+boot: "auto"
+homeassistant_api: true
+
+# Valores padrão
+options:
+  linhas_monitoradas:
+    - "371"
+  ponto_onibus_lat: 0.0
+  ponto_onibus_lon: 0.0
+  fator_curvas: 1.4
+  velocidade_media_onibus: 18.0
+  confirmacoes_necessarias: 2
+  tempo_retencao_memoria: 3600
+  intervalo_de_atualizacao_segundos: 30
+
+schema:
+  linhas_monitoradas:
+    - str
+  Ponto_onibus_lat: float
+  Ponto_onibus_lon: float
+  fator_curvas: float
+  velocidade_media_onibus: float
+  confirmacoes_necessarias: int
+  tempo_retencao_memoria: int
+  intervalo_de_atualizacao_segundos: int

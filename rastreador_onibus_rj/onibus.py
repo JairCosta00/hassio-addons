@@ -38,8 +38,8 @@ if os.path.exists(ARQUIVO_OPCOES):
 
 # Puxa os dados da UI ou usa os valores padrão zerados
 LINHAS_MONITORADAS = opcoes_usuario.get('linhas_monitoradas', [])
-Ponto_onibus_lat = opcoes_usuario.get('Ponto_onibus_lat', 0.0)
-Ponto_onibus_lon = opcoes_usuario.get('Ponto_onibus_lon', 0.0)
+ponto_onibus_lat = opcoes_usuario.get('ponto_onibus_lat', 0.0)
+ponto_onibus_lon = opcoes_usuario.get('ponto_onibus_lon', 0.0)
 FATOR_CURVAS = opcoes_usuario.get('fator_curvas', 1.4)
 VELOCIDADE_MEDIA_ONIBUS = opcoes_usuario.get('velocidade_media_onibus', 18.0)
 CONFIRMACOES_NECESSARIAS = opcoes_usuario.get('confirmacoes_necessarias', 2)
@@ -471,8 +471,8 @@ while True:
             rota = getattr(rotas_onibus, nome_variavel_rota)
 
             # Calcula o ponto da rota mais próximo da casa (faz isso só 1x por linha)
-            if Ponto_onibus_lat != 0 and linha_identificador not in PROGRESSO_CASA:
-                prog_casa, _, _ = progresso_na_rota(Ponto_onibus_lat, Ponto_onibus_lon, rota)
+            if ponto_onibus_lat != 0 and linha_identificador not in PROGRESSO_CASA:
+                prog_casa, _, _ = progresso_na_rota(ponto_onibus_lat, ponto_onibus_lon, rota)
                 PROGRESSO_CASA[linha_identificador] = prog_casa
 
             try:
@@ -534,7 +534,7 @@ while True:
             lon_ancora = lon
             
         # Calcula distância reta agora para usar no fallback e salvar
-        dist_reta_atual = calcular_distancia(lat, lon, Ponto_onibus_lat, Ponto_onibus_lon) if Ponto_onibus_lat != 0 else 0
+        dist_reta_atual = calcular_distancia(lat, lon, ponto_onibus_lat, ponto_onibus_lon) if ponto_onibus_lat != 0 else 0
 
         # --- SALVA NA NOVA MEMÓRIA ---
         nova_memoria[ordem] = {
@@ -554,7 +554,7 @@ while True:
         }
 
     # --- CALCULA TEMPO ATÉ CASA ---
-        if Ponto_onibus_lat == 0 or Ponto_onibus_lon == 0:
+        if ponto_onibus_lat == 0 or ponto_onibus_lon == 0:
             dist_real = "unknown"
             tempo = "unknown"
         else:

@@ -1,5 +1,5 @@
 name: "Rastreador de Ônibus RJ"
-version: "2.0.13"
+version: "2.0.15"
 slug: "rastreador_onibus_rj"
 description: "Rastreia os ônibus SPPO e BRT da Mobilidade Rio em tempo real."
 url: "https://github.com/JairCosta00/hassio-addons"
@@ -36,4 +36,10 @@ schema:
   confirmacoes_necessarias: "int(1,10)"
   tempo_retencao_memoria: "int(60,86400)"
   intervalo_de_atualizacao_segundos: "int(20,)"
-  log_level: "list(debug,info,warning,error,critical)"
+  log_level:
+  log_level:
+    - debug
+    - info
+    - warning
+    - error
+    - critical

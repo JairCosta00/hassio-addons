@@ -36,9 +36,4 @@ schema:
   confirmacoes_necessarias: "int(1,10)"
   tempo_retencao_memoria: "int(60,86400)"
   intervalo_de_atualizacao_segundos: "int(20,)"
-  log_level:
-    - debug
-    - info
-    - warning
-    - error
-    - critical
+  log_level: "list(debug|info|warning|error|critical)"

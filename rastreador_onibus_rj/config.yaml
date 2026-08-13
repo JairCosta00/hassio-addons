@@ -24,6 +24,7 @@ options:
   confirmacoes_necessarias: 2
   tempo_retencao_memoria: 3600
   intervalo_de_atualizacao_segundos: 30
+  log_level: "warning"
 
 schema:
   linhas_monitoradas:
@@ -35,3 +36,4 @@ schema:
   confirmacoes_necessarias: "int(1,10)"
   tempo_retencao_memoria: "int(60,86400)"
   intervalo_de_atualizacao_segundos: "int(20,)"
+  log_level: "list(debug,info,warning,error,critical)"

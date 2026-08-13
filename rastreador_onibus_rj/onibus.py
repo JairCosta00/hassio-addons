@@ -11,8 +11,6 @@ from mapa_destinos import MAPA_DESTINOS
 from datetime import datetime, timezone, timedelta
 import rotas_onibus
 
-# --- CONFIGURAÇÃO DE LOG ---
-logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- CONFIGURAÇÕES DO SISTEMA ---
 TOKEN = os.environ.get('SUPERVISOR_TOKEN')
@@ -24,6 +22,16 @@ PROGRESSO_CASA = {}
 # --- LEITURA DAS OPÇÕES DA ABA "CONFIGURAÇÕES" DO ADD-ON ---
 ARQUIVO_OPCOES = "/data/options.json"
 opcoes_usuario = {}
+
+# Puxa o nível de log escolhido no painel (padrão será 'warning' para poupar espaço)
+nivel_log_usuario = opcoes_usuario.get('log_level', 'warning').upper()
+
+# Converte o texto da tela para o formato que a biblioteca de logging entende
+import logging
+numeric_level = getattr(logging, nivel_log_usuario, logging.WARNING)
+
+# Aplica a configuração
+logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
 
 if os.path.exists(ARQUIVO_OPCOES):
     try:
@@ -194,13 +202,15 @@ memoria = {}
     
 # --- REGRA DE DESLIGAMENTO SEGURO ---
 def desligar_suavemente(sig, frame):
-    logging.info("Sinal de parada recebido do Home Assistant. Encerrando o rastreador de forma segura...")
+    logging.WARNING("Sinal de parada recebido do Home Assistant. Encerrando o rastreador de forma segura...")
     sys.exit(0)
 
 # Fica escutando o botão "Parar" (SIGTERM) e o "Ctrl+C" (SIGINT)
 signal.signal(signal.SIGINT, desligar_suavemente)
 signal.signal(signal.SIGTERM, desligar_suavemente)
 # ------------------------------------
+
+print("Conectado ao servidor e rastreador iniciado com sucesso!")
 
 AGORA = time.time()
 

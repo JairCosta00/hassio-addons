@@ -427,7 +427,7 @@ while True:
     # --- RECUPERA MEMÓRIA DO ÔNIBUS ---
         mem = memoria.get(ordem, {})
         if mem.get('linha') and mem.get('linha') != linha_identificador:
-            logging.info(f"Ônibus {ordem} trocou de rota. Limpando histórico fantasma.")
+            logging.info(f"Ônibus {ordem} mudou de linha. Limpando histórico anterior.")
             mem = {}
             
     # --- NOVO: FILTRO DE ÔNIBUS PARADO ---

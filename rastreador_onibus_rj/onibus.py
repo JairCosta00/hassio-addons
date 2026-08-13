@@ -212,6 +212,8 @@ signal.signal(signal.SIGTERM, desligar_suavemente)
 
 AGORA = time.time()
 
+print("▶ STATUS [OK]: Conexão estabelecida com a Mobilidade Rio.", flush=True)
+
 while True:
     AGORA = time.time()
     nova_memoria = {}

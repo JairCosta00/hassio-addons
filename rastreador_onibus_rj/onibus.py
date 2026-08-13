@@ -12,7 +12,7 @@ from datetime import datetime, timezone, timedelta
 import rotas_onibus
 
 # --- CONFIGURAÇÃO DE LOG ---
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- CONFIGURAÇÕES DO SISTEMA ---
 TOKEN = os.environ.get('SUPERVISOR_TOKEN')

@@ -23,28 +23,28 @@ PROGRESSO_CASA = {}
 ARQUIVO_OPCOES = "/data/options.json"
 opcoes_usuario = {}
 
-# Puxa o nível de log escolhido no painel (padrão será 'warning' para poupar espaço)
-nivel_log_usuario = opcoes_usuario.get('log_level', 'warning').upper()
-
-# Converte o texto da tela para o formato que a biblioteca de logging entende
-import logging
-numeric_level = getattr(logging, nivel_log_usuario, logging.WARNING)
-
-# Aplica a configuração
-logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
-
 if os.path.exists(ARQUIVO_OPCOES):
     try:
         with open(ARQUIVO_OPCOES, 'r', encoding='utf-8') as f:
             opcoes_usuario = json.load(f)
-        
-        # --- ADICIONE ESTA LINHA AQUI EMBAIXO ---
-        logging.info(f"DADOS RECEBIDOS DO PAINEL: {opcoes_usuario}")
-        
     except Exception as e:
-        logging.error(f"Erro ao ler configurações do Add-on: {e}. Usando valores de emergência.")
+        # Como o log ainda não foi configurado, usamos um print de segurança
+        print(f"Erro ao ler configurações do Add-on: {e}. Usando valores padrão.")
 
-# Puxa os dados da UI ou usa os valores padrão zerados
+# --- CONFIGURAÇÃO DINÂMICA DE LOG ---
+# Puxa o nível de log escolhido no painel (padrão será 'warning' se não encontrar)
+nivel_log_usuario = opcoes_usuario.get('log_level', 'warning').upper()
+
+# Converte o texto da tela para o formato que a biblioteca de logging entende
+numeric_level = getattr(logging, nivel_log_usuario, logging.WARNING)
+
+# Aplica a configuração globalmente
+logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Log de confirmação (só aparece se o nível permitir)
+logging.info(f"DADOS RECEBIDOS DO PAINEL: {opcoes_usuario}")
+
+# Puxa os dados da UI ou usa os valores padrão
 LINHAS_MONITORADAS = opcoes_usuario.get('linhas_monitoradas', [])
 ponto_onibus_lat = opcoes_usuario.get('ponto_onibus_lat', 0.0)
 ponto_onibus_lon = opcoes_usuario.get('ponto_onibus_lon', 0.0)

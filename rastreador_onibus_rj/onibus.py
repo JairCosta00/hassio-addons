@@ -42,7 +42,7 @@ numeric_level = getattr(logging, nivel_log_usuario, logging.WARNING)
 logging.basicConfig(level=numeric_level, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Log de confirmação (só aparece se o nível permitir)
-logging.info(f"DADOS RECEBIDOS DO PAINEL: {opcoes_usuario}")
+logging.debug(f"DADOS RECEBIDOS DO PAINEL: {opcoes_usuario}")
 
 # Puxa os dados da UI ou usa os valores padrão
 LINHAS_MONITORADAS = opcoes_usuario.get('linhas_monitoradas', [])
@@ -202,7 +202,7 @@ memoria = {}
     
 # --- REGRA DE DESLIGAMENTO SEGURO ---
 def desligar_suavemente(sig, frame):
-    logging.warning("Sinal de parada recebido do Home Assistant. Encerrando o rastreador de forma segura...")
+    logging.info("Sinal de parada recebido do Home Assistant. Encerrando o rastreador...")
     sys.exit(0)
 
 # Fica escutando o botão "Parar" (SIGTERM) e o "Ctrl+C" (SIGINT)
@@ -212,7 +212,7 @@ signal.signal(signal.SIGTERM, desligar_suavemente)
 
 AGORA = time.time()
 
-print("▶ STATUS [OK]: Conexão estabelecida com a Mobilidade Rio.", flush=True)
+print("▶ STATUS [OK]: Conexão com a Data.Rio estabelecida.", flush=True)
 
 while True:
     AGORA = time.time()
@@ -231,7 +231,7 @@ while True:
 
         # Monta a URL dinâmica para SPPO
         url_sppo = f"https://dados.mobilidade.rio/gps/sppo?dataInicial={data_inicial}&dataFinal={data_final}"
-        logging.info(f"URL SPPO gerada: {url_sppo}")
+        logging.debug(f"URL SPPO gerada: {url_sppo}")
 
         req_sppo = urllib.request.Request(url_sppo)
         req_sppo.add_header("Accept-Encoding", "gzip") # Avisa que aceitamos dados compactados
@@ -244,7 +244,7 @@ while True:
                     raw_data = gzip.decompress(raw_data)
                     
                 dados_sppo = json.loads(raw_data.decode('utf-8'))
-                logging.info(f"Dados SPPO baixados: {len(dados_sppo)} ônibus encontrados")
+                logging.debug(f"Dados SPPO baixados: {len(dados_sppo)} ônibus encontrados")
             else:
                 logging.error(f"Erro ao acessar API SPPO da Prefeitura: Código {response.getcode()}")
                 time.sleep(30)
@@ -280,7 +280,7 @@ while True:
                 else:
                     qtd_brt = len(dados_brt)
                     
-                logging.info(f"Dados BRT baixados: {qtd_brt} ônibus encontrados")
+                logging.debug(f"Dados BRT baixados: {qtd_brt} ônibus encontrados")
             else:
                 logging.error(f"Erro ao acessar API do BRT: Código {response.getcode()}")
                 time.sleep(30)
@@ -315,7 +315,7 @@ while True:
                     dados.extend(valor)
                     break
 
-    logging.info(f"Total de veículos combinados para processamento: {len(dados)}")
+    logging.debug(f"Total de veículos combinados para processamento: {len(dados)}")
     # --- FILTRO DE DUPLICATAS (NOVA API) ---
     dados_unicos = {}
     for ob in dados:
@@ -345,7 +345,7 @@ while True:
 
     # Substitui a lista suja pela lista limpa com apenas 1 posição por ônibus
     dados = list(dados_unicos.values())
-    logging.info(f"Total de veículos únicos após limpar duplicatas: {len(dados)}")
+    logging.debug(f"Total de veículos únicos após limpar duplicatas: {len(dados)}")
     # ---------------------------------------
 
     nova_memoria = {}
@@ -355,7 +355,7 @@ while True:
         if AGORA - m.get('ultima_atualizacao', AGORA) < TEMPO_RETENCAO_MEMORIA:
             nova_memoria[ord_bus] = m
         else:
-            logging.debug(f"Removendo ônibus {ord_bus} da memória (expirado)")
+            logging.info(f"Removendo ônibus {ord_bus} da memória (expirado)")
 
     # --- PROCESSAMENTO PRINCIPAL ---
     total_processados = 0
@@ -413,12 +413,10 @@ while True:
             logging.debug(f"Erro ao converter coordenadas do ônibus {ordem}: {e}")
             continue
         
-        # --- ADICIONE ESTAS 4 LINHAS AQUI ---
         idade_gps_minutos = (AGORA - timestamp_gps) / 60.0
         if idade_gps_minutos > 10.0:
             logging.debug(f"Ônibus {ordem} ignorado: Sinal de GPS velho ({idade_gps_minutos:.1f} min atrás)")
             continue
-        # ------------------------------------
 
         if not ordem or lat == 0.0 or lon == 0.0:
             logging.debug(f"Ônibus {ordem} ignorado: dados incompletos")
@@ -440,7 +438,7 @@ while True:
         if lat == lat_mem and lon == lon_mem:
             minutos_parado = (AGORA - tempo_parado_desde) / 60.0
             if minutos_parado > 15.0:
-                logging.debug(f"Ônibus {ordem} ignorado: Parado no mesmo lugar há {minutos_parado:.1f} min")
+                logging.info(f"Ônibus {ordem} ignorado: Parado no mesmo lugar há {minutos_parado:.1f} min")
                 
                 # Salva na memória para não perder o contador, mas pula o envio pro MQTT
                 mem['ultima_atualizacao'] = AGORA
@@ -665,11 +663,11 @@ while True:
         with open(tmp, 'w', encoding='utf-8') as f:
             json.dump(nova_memoria, f, ensure_ascii=False, indent=2)
         os.replace(tmp, ARQUIVO_MEMORIA)
-        logging.info(f"Memória salva: {len(nova_memoria)} ônibus ativos")
+        logging.debug(f"Memória salva: {len(nova_memoria)} ônibus ativos")
     except Exception as e:
         logging.error(f"Erro salvando memória: {e}")
 
     # Atualiza a referência da memória para o próximo ciclo
     # --- RESUMO FINAL ---
-    logging.info(f"Processamento concluído: {total_processados} ônibus processados, {total_ignorados} ignorados")
+    logging.debug(f"Processamento concluído: {total_processados} ônibus processados, {total_ignorados} ignorados")
     time.sleep(INTERVALO_ATUALIZACAO)

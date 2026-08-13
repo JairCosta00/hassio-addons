@@ -202,15 +202,13 @@ memoria = {}
     
 # --- REGRA DE DESLIGAMENTO SEGURO ---
 def desligar_suavemente(sig, frame):
-    logging.WARNING("Sinal de parada recebido do Home Assistant. Encerrando o rastreador de forma segura...")
+    logging.warning("Sinal de parada recebido do Home Assistant. Encerrando o rastreador de forma segura...")
     sys.exit(0)
 
 # Fica escutando o botão "Parar" (SIGTERM) e o "Ctrl+C" (SIGINT)
 signal.signal(signal.SIGINT, desligar_suavemente)
 signal.signal(signal.SIGTERM, desligar_suavemente)
 # ------------------------------------
-
-print("Conectado ao servidor e rastreador iniciado com sucesso!")
 
 AGORA = time.time()
 

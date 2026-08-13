@@ -438,7 +438,7 @@ while True:
         if lat == lat_mem and lon == lon_mem:
             minutos_parado = (AGORA - tempo_parado_desde) / 60.0
             if minutos_parado > 15.0:
-                logging.info(f"Ônibus {ordem} ignorado: Parado no mesmo lugar há {minutos_parado:.1f} min")
+                logging.debug(f"Ônibus {ordem} ignorado: Parado no mesmo lugar há {minutos_parado:.1f} min")
                 
                 # Salva na memória para não perder o contador, mas pula o envio pro MQTT
                 mem['ultima_atualizacao'] = AGORA

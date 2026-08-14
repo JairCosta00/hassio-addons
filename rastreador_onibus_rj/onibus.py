@@ -355,7 +355,7 @@ while True:
         if AGORA - m.get('ultima_atualizacao', AGORA) < TEMPO_RETENCAO_MEMORIA:
             nova_memoria[ord_bus] = m
         else:
-            logging.info(f"Removendo ônibus {ord_bus} da memória (expirado)")
+            logging.debug(f"Removendo ônibus {ord_bus} da memória (expirado)")
 
     # --- PROCESSAMENTO PRINCIPAL ---
     total_processados = 0
@@ -427,7 +427,7 @@ while True:
     # --- RECUPERA MEMÓRIA DO ÔNIBUS ---
         mem = memoria.get(ordem, {})
         if mem.get('linha') and mem.get('linha') != linha_identificador:
-            logging.info(f"Ônibus {ordem} mudou de linha. Limpando histórico anterior.")
+            logging.debug(f"Ônibus {ordem} mudou de linha. Limpando histórico anterior.")
             mem = {}
             
     # --- NOVO: FILTRO DE ÔNIBUS PARADO ---

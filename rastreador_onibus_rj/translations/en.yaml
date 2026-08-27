@@ -8,9 +8,6 @@ configuration:
   ponto_onibus_lon:
     name: "Longitude do Ponto de Ônibus"
     description: "Sua coordenada exata do ponto para calcular o tempo de chegada."
-  fator_curvas:
-    name: "Fator de Curvas"
-    description: "Ajuste matemático (padrão: 1.4) para compensar o trajeto curvo das ruas. Aumente se o tempo de chegada estiver caindo rápido demais."
   velocidade_media_onibus:
     name: "Velocidade Média (km/h)"
     description: "Usada para estimar o tempo de chegada quando o ônibus usa o cálculo de linha reta (padrão: 18.0)."

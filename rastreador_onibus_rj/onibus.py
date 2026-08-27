@@ -65,6 +65,8 @@ def formatar_nome_linha(linha_numero):
     """Formata o número da linha com espaços entre dígitos (ex: 554 -> '5 5 4')"""
     return " ".join(linha_numero)
 
+mqtt_conectado = False
+
 def enviar_mqtt(topic, payload, retain=False):
     """Envia mensagem MQTT via Home Assistant API"""
     if not TOKEN:
@@ -85,8 +87,16 @@ def enviar_mqtt(topic, payload, retain=False):
         try:
             response = urllib.request.urlopen(req, timeout=5)
             if response.getcode() == 200:
+                global mqtt_conectado
+
+                if not mqtt_conectado:
+                    logging.info("MQTT conectado com sucesso!")
+
+                mqtt_conectado = True
                 return True
+            
         except urllib.error.URLError as e:
+            mqtt_conectado = False
             logging.warning(f"Erro MQTT tentativa {tentativa+1}/3: {e}")
             if tentativa < 2:
                 time.sleep(2 ** tentativa)
@@ -217,10 +227,11 @@ AGORA = time.time()
 
 print("▶ STATUS [OK]: Conexão com a Data.Rio estabelecida.", flush=True)
 
+api_conectada = False
+
 while True:
     AGORA = time.time()
     nova_memoria = {}
-          
         # --- CARREGA DADOS ---
     try:
     # --- 1. RASTREAMENTO SPPO (ÔNIBUS NORMAIS) ---
@@ -288,6 +299,11 @@ while True:
                 logging.error(f"Erro ao acessar API do BRT: Código {response.getcode()}")
                 time.sleep(30)
                 continue
+
+        if not api_conectada:
+            logging.info("API de ônibus conectada com sucesso!")
+
+        api_conectada = True
 
     except Exception as e:
         logging.error(f"Erro ao baixar API: {e}. Tentando novamente em 30s...")

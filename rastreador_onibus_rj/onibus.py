@@ -48,11 +48,12 @@ logging.debug(f"DADOS RECEBIDOS DO PAINEL: {opcoes_usuario}")
 LINHAS_MONITORADAS = opcoes_usuario.get('linhas_monitoradas', [])
 ponto_onibus_lat = opcoes_usuario.get('ponto_onibus_lat', 0.0)
 ponto_onibus_lon = opcoes_usuario.get('ponto_onibus_lon', 0.0)
-FATOR_CURVAS = opcoes_usuario.get('fator_curvas', 1.4)
 VELOCIDADE_MEDIA_ONIBUS = opcoes_usuario.get('velocidade_media_onibus', 18.0)
 CONFIRMACOES_NECESSARIAS = opcoes_usuario.get('confirmacoes_necessarias', 2)
 TEMPO_RETENCAO_MEMORIA = opcoes_usuario.get('tempo_retencao_memoria', 3600)
 INTERVALO_ATUALIZACAO = opcoes_usuario.get('intervalo_de_atualizacao_segundos', 30)
+
+FATOR_CURVAS = 1.4
 
 # --- FUNÇÕES ---
 
@@ -92,6 +93,8 @@ def enviar_mqtt(topic, payload, retain=False):
         except Exception as e:
             logging.error(f"Erro inesperado no MQTT: {e}")
             break
+    logging.warning("MQTT indisponível. Aguardando 30 segundos...")
+    time.sleep(30)
     
     return False
 

@@ -272,7 +272,7 @@ while True:
         req_brt = urllib.request.Request(url_brt)
         req_brt.add_header("Accept-Encoding", "gzip")
 
-        with urllib.request.urlopen(req_brt, timeout=15) as response:
+        with urllib.request.urlopen(req_brt, timeout=30) as response:
             if response.getcode() == 200:
                 # ESSA LINHA É FUNDAMENTAL: Ela baixa os dados reais da prefeitura
                 raw_data = response.read()

@@ -90,7 +90,7 @@ def enviar_mqtt(topic, payload, retain=False):
                 global mqtt_conectado
 
                 if not mqtt_conectado:
-                    logging.info("MQTT conectado com sucesso!")
+                    logging.warning("MQTT conectado com sucesso!")
 
                 mqtt_conectado = True
                 return True

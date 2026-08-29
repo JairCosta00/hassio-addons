@@ -22,4 +22,4 @@ configuration:
     description: "Tempo (em segundos) que o sistema espera antes de baixar novos dados da Mobilidade Rio (padrão: 30)."
   log_level:
     name: "Nível de Registro (Log)"
-    description: "Define o nível de detalhes das mensagens exibidas na aba de Logs. Mantenha em 'info' para poupar espaço no seu sistema."
+    description: "Define o nível de detalhes das mensagens exibidas na aba de Logs. Mantenha em 'error' para poupar espaço no seu sistema."

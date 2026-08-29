@@ -250,7 +250,7 @@ while True:
         req_sppo = urllib.request.Request(url_sppo)
         req_sppo.add_header("Accept-Encoding", "gzip") # Avisa que aceitamos dados compactados
 
-        with urllib.request.urlopen(req_sppo, timeout=15) as response:
+        with urllib.request.urlopen(req_sppo, timeout=30) as response:
             if response.getcode() == 200:
                 raw_data = response.read()
                 # Se a API enviar compactado, descompacta antes de ler

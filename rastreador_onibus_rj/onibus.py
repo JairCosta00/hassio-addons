@@ -9,6 +9,7 @@ import gzip
 import logging
 from mapa_destinos import MAPA_DESTINOS
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 import rotas_onibus
 
 
@@ -236,7 +237,7 @@ while True:
     try:
     # --- 1. RASTREAMENTO SPPO (ÔNIBUS NORMAIS) ---
         # Usa o relógio UTC para a URL bater perfeitamente com o servidor da API
-        agora_dt = datetime.now(timezone.utc)
+        agora_dt = datetime.now(ZoneInfo("America/Sao_Paulo"))
         menos_40_dt = agora_dt - timedelta(seconds=40) # Janela de 40 segundos
 
         # Formata exatamente no padrão exigido pela Mobilidade Rio (YYYY-MM-DD+HH:MM:SS)
@@ -348,7 +349,7 @@ while True:
             try:
                 dt_obj = datetime.strptime(dt_s, "%Y-%m-%d %H:%M:%S")
                 # Avisa que é UTC e extrai o timestamp correto
-                ts = dt_obj.replace(tzinfo=timezone.utc).timestamp()
+                ts = dt_obj.replace(tzinfo=ZoneInfo("America/Sao_Paulo")).timestamp()
             except ValueError:
                 ts = 0
         else:
@@ -422,7 +423,9 @@ while True:
                 
                 # Avisa o Python que a hora é UTC. O .timestamp() converte 
                 # automaticamente para o formato universal usado pelo time.time()
-                timestamp_gps = dt_obj.replace(tzinfo=timezone.utc).timestamp()
+                timestamp_gps = dt_obj.replace(
+                    tzinfo=ZoneInfo("America/Sao_Paulo")
+                ).timestamp()
                 
             else:
                 datahora_ms = int(onibus.get('datahora', time.time() * 1000))

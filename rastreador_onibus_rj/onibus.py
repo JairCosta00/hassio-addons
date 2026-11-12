@@ -9,6 +9,7 @@ import gzip
 import logging
 from mapa_destinos import MAPA_DESTINOS
 from datetime import datetime, timezone, timedelta
+from urllib.parse import urlencode
 import rotas_onibus
 
 
@@ -204,6 +205,83 @@ def progresso_na_rota(lat, lon, rota):
 
     return melhor_progresso, melhor_segmento, melhor_dist
 
+def consultar_frota(modo, minuto, sistema=None):
+    base_url = "https://its.mobilidade.rio/v1/geolocalizacao/veiculos"
+    registros = []
+    cursor = None
+    cursores_vistos = set()
+
+    for _ in range(50):
+        parametros = {
+            "modo": modo,
+            "minuto_utc": minuto.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "limit": 5000
+        }
+
+        if sistema:
+            parametros["sistema"] = sistema
+
+        if cursor:
+            parametros["cursor"] = cursor
+
+        url = f"{base_url}?{urlencode(parametros)}"
+
+        req = urllib.request.Request(url)
+        req.add_header("Accept-Encoding", "gzip")
+        req.add_header("Accept", "application/json")
+
+        with urllib.request.urlopen(req, timeout=30) as response:
+            raw_data = response.read()
+
+            if response.info().get("Content-Encoding") == "gzip":
+                raw_data = gzip.decompress(raw_data)
+
+            resposta = json.loads(raw_data.decode("utf-8"))
+
+        if isinstance(resposta, list):
+            registros.extend(resposta)
+            break
+
+        if not isinstance(resposta, dict):
+            raise ValueError("Formato inesperado da API")
+
+        lista = None
+
+        for chave in ("data", "veiculos", "results", "registros", "items"):
+            valor = resposta.get(chave)
+            if isinstance(valor, list):
+                lista = valor
+                break
+            if isinstance(valor, dict):
+                lista = next(
+                    (v for v in valor.values() if isinstance(v, list)),
+                    None
+                )
+                if lista is not None:
+                    break
+
+        if lista is None:
+            lista = next(
+                (v for v in resposta.values() if isinstance(v, list)),
+                None
+            )
+
+        if lista is None:
+            raise ValueError("Lista de veículos não encontrada na resposta")
+
+        registros.extend(lista)
+
+        proximo = resposta.get("next_cursor")
+
+        if not proximo or proximo in cursores_vistos:
+            break
+
+        cursores_vistos.add(proximo)
+        cursor = proximo
+
+        time.sleep(0.25)
+
+    return registros
 # --- VALIDAÇÃO INICIAL ---
 if not TOKEN:
         logging.error("TOKEN não configurado! Por favor, configure o token de longa duração.")
@@ -232,109 +310,56 @@ api_conectada = False
 while True:
     AGORA = time.time()
     nova_memoria = {}
-        # --- CARREGA DADOS ---
+
+    # --- CARREGA DADOS DA NOVA API CENTRALIZADA ---
     try:
-    # --- 1. RASTREAMENTO SPPO (ÔNIBUS NORMAIS) ---
-        # Usa o relógio UTC para a URL bater perfeitamente com o servidor da API
         agora_dt = datetime.now(timezone.utc)
-        menos_40_dt = agora_dt - timedelta(seconds=40) # Janela de 40 segundos
+        minuto_atual = agora_dt.replace(second=0, microsecond=0)
 
-        # Formata exatamente no padrão exigido pela Mobilidade Rio (YYYY-MM-DD+HH:MM:SS)
-        data_final = agora_dt.strftime("%Y-%m-%d+%H:%M:%S")
-        data_inicial = menos_40_dt.strftime("%Y-%m-%d+%H:%M:%S")
+        minutos = [
+            minuto_atual - timedelta(minutes=1),
+            minuto_atual
+        ]
 
-        # Monta a URL dinâmica para SPPO
-        url_sppo = f"https://dados.mobilidade.rio/gps/sppo?dataInicial={data_inicial}&dataFinal={data_final}"
-        logging.debug(f"URL SPPO gerada: {url_sppo}")
+        dados = []
 
-        req_sppo = urllib.request.Request(url_sppo)
-        req_sppo.add_header("Accept-Encoding", "gzip") # Avisa que aceitamos dados compactados
+        for minuto in minutos:
 
-        with urllib.request.urlopen(req_sppo, timeout=30) as response:
-            if response.getcode() == 200:
-                raw_data = response.read()
-                # Se a API enviar compactado, descompacta antes de ler
-                if response.info().get('Content-Encoding') == 'gzip':
-                    raw_data = gzip.decompress(raw_data)
-                    
-                dados_sppo = json.loads(raw_data.decode('utf-8'))
-                logging.debug(f"Dados SPPO baixados: {len(dados_sppo)} ônibus encontrados")
-            else:
-                logging.error(f"Erro ao acessar API SPPO da Prefeitura: Código {response.getcode()}")
-                time.sleep(30)
-                continue
+            # SPPO
+            dados_sppo = consultar_frota(
+                modo="onibus",
+                minuto=minuto,
+                sistema="sppo"
+            )
 
-    # --- 2. RASTREAMENTO BRT ---
-        # URL fixa para o BRT, sem parâmetros de tempo
-        url_brt = "https://dados.mobilidade.rio/gps/brt"
-        logging.debug(f"URL BRT gerada: {url_brt}")
+            dados.extend(dados_sppo)
 
-        req_brt = urllib.request.Request(url_brt)
-        req_brt.add_header("Accept-Encoding", "gzip")
+            # BRT
+            dados_brt = consultar_frota(
+                modo="brt",
+                minuto=minuto
+            )
 
-        with urllib.request.urlopen(req_brt, timeout=30) as response:
-            if response.getcode() == 200:
-                # ESSA LINHA É FUNDAMENTAL: Ela baixa os dados reais da prefeitura
-                raw_data = response.read()
-                
-                # Se vier compactado, descompacta
-                if response.info().get('Content-Encoding') == 'gzip':
-                    raw_data = gzip.decompress(raw_data)
-                    
-                # Lê o JSON (note que esta linha fica na mesma direção do IF de cima)
-                dados_brt = json.loads(raw_data.decode('utf-8'))
-                
-                # --- CONTA A QUANTIDADE REAL DE ÔNIBUS BRT ---
-                if isinstance(dados_brt, dict):
-                    # Se for um dicionário, procura a lista lá dentro
-                    for valor in dados_brt.values():
-                        if isinstance(valor, list):
-                            qtd_brt = len(valor)
-                            break
-                else:
-                    qtd_brt = len(dados_brt)
-                    
-                logging.debug(f"Dados BRT baixados: {qtd_brt} ônibus encontrados")
-            else:
-                logging.error(f"Erro ao acessar API do BRT: Código {response.getcode()}")
-                time.sleep(30)
-                continue
+            dados.extend(dados_brt)
 
         if not api_conectada:
-            logging.info("API de ônibus conectada com sucesso!")
+            logging.info("API Centralizada conectada com sucesso!")
 
         api_conectada = True
 
+        logging.debug(
+            f"Total de registros recebidos: {len(dados)}"
+        )
+
     except Exception as e:
-        logging.error(f"Erro ao baixar API: {e}. Tentando novamente em 30s...")
+        api_conectada = False
+        logging.error(
+            f"Erro ao baixar API Centralizada: {e}. "
+            "Tentando novamente em 30s..."
+        )
         time.sleep(30)
         continue
-    # --- UNIFICAÇÃO DOS DADOS (SPPO + BRT) ---
-    dados = []
 
-    # 1. Extrai SPPO
-    if 'dados_sppo' in locals():
-        if isinstance(dados_sppo, list):
-            dados.extend(dados_sppo)
-        elif isinstance(dados_sppo, dict):
-            # Se for dicionário, extrai a primeira lista que encontrar
-            for valor in dados_sppo.values():
-                if isinstance(valor, list):
-                    dados.extend(valor)
-                    break
-
-    # 2. Extrai BRT (resolve o problema do JSON empacotado)
-    if 'dados_brt' in locals():
-        if isinstance(dados_brt, list):
-            dados.extend(dados_brt)
-        elif isinstance(dados_brt, dict):
-            # Entra no JSON e puxa a lista de veículos não importa o nome da chave
-            for valor in dados_brt.values():
-                if isinstance(valor, list):
-                    dados.extend(valor)
-                    break
-
-    logging.debug(f"Total de veículos combinados para processamento: {len(dados)}")
     # --- FILTRO DE DUPLICATAS (NOVA API) ---
     dados_unicos = {}
     for ob in dados:
@@ -393,7 +418,7 @@ while True:
             continue
 
         # A API do BRT geralmente envia a direção pronta no campo 'sentido' ou 'trajeto'
-        sentido_api = str(onibus.get('sentido', onibus.get('trajeto', ''))).strip()
+        sentido_api = str(onibus.get('sentido') or onibus.get('trajeto') or '').strip()
         
         nome_variavel_rota = f"ROTA_{linha_numeros}"
         tem_rota = hasattr(rotas_onibus, nome_variavel_rota)

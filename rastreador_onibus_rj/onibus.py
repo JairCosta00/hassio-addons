@@ -230,7 +230,7 @@ def consultar_frota(modo, minuto, sistema=None):
         req.add_header("Accept-Encoding", "gzip")
         req.add_header("Accept", "application/json")
 
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with urllib.request.urlopen(req, timeout=45) as response:
             raw_data = response.read()
 
             if response.info().get("Content-Encoding") == "gzip":

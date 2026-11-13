@@ -1,6 +1,6 @@
 # Home Assistant App: Rastreador de Ônibus do Rio de Janeiro
 
-Este app (anteriormente chamado de *add-on*) permite acompanhar ônibus convencionais (SPPO) e BRT do Rio de Janeiro no Home Assistant. Ele consulta dados de geolocalização, identifica o sentido dos veículos e estima o tempo de chegada a um ponto de referência.
+Este app permite acompanhar ônibus convencionais (SPPO) e BRT do Rio de Janeiro no Home Assistant. Ele consulta dados de geolocalização, identifica o sentido dos veículos e estima o tempo de chegada a um ponto de referência.
 
 Os resultados são publicados por MQTT e os sensores são criados automaticamente usando **MQTT Discovery**.
 

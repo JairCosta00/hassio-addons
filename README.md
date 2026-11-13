@@ -452,11 +452,6 @@ As tentativas MQTT são realizadas por mensagem, e o programa não mantém uma f
 
 As ideias abaixo **não estão implementadas no arquivo fornecido**:
 
-- Recuperar o arquivo de memória ao iniciar e armazená-lo em um local persistente quando necessário.
-- Criar um painel Lovelace com mapa, resumo por linha e próximos veículos.
-- Implementar testes automatizados para geolocalização, interpretação da API e publicação MQTT.
-- Validar tipos e limites de todas as opções do add-on.
-- Criar métricas de saúde, latência da API e monitoramento da última atualização.
 - Remover automaticamente configurações MQTT Discovery de veículos que não devam mais existir.
 - Avaliar estimativas com velocidade histórica por trecho e condições reais de operação.
 - Empacotar e documentar o add-on completo com os arquivos de instalação necessários.

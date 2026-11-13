@@ -35,11 +35,11 @@ Exemplo de configuração:
 
 ```yaml
 linhas_monitoradas:
-  - "810"
-  - "554"
-  - "613"
-ponto_onibus_lat: -22.9000
-ponto_onibus_lon: -43.2000
+  - "111"
+  - "164"
+  - "453"
+ponto_onibus_lat: -11.9000
+ponto_onibus_lon: -22.9000
 velocidade_media_onibus: 18.0
 confirmacoes_necessarias: 2
 tempo_retencao_memoria: 3600
@@ -62,14 +62,14 @@ Lista dos números das linhas que serão monitoradas. Os números devem ser info
 Latitude do ponto de ônibus utilizado como referência para as estimativas de chegada.
 
 - **Padrão no código:** `0.0`.
-- Deve ser informada em graus decimais, como `-22.9000`.
+- Deve ser informada em graus decimais, como `-11.9000`.
 
 ### Opção: `ponto_onibus_lon`
 
 Longitude do ponto de ônibus utilizado como referência para as estimativas de chegada.
 
 - **Padrão no código:** `0.0`.
-- Deve ser informada em graus decimais, como `-43.2000`.
+- Deve ser informada em graus decimais, como `-22.9000`.
 
 Se qualquer uma das coordenadas estiver definida como `0`, o script não calcula a previsão de chegada e retorna `unknown` para o tempo e a distância.
 

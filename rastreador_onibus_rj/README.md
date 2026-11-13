@@ -1,7 +1,6 @@
 # Home Assistant Add-on: Rio Bus Tracker (Data.Rio)
 
-[![Release][release-shield]][release] ![Project Stage][project-stage-shield] ![Project Maintenance][maintenance-shield]
-[![License][license-shield]][license]
+![Supports aarch64 Architecture][aarch64-shield] ![Supports amd64 Architecture][amd64-shield]
 
 Real-time bus tracking and ETA calculation for Rio de Janeiro (SPPO and BRT) directly in Home Assistant.
 
@@ -44,9 +43,5 @@ The core script (`onibus.py`) fetches data from `https://its.mobilidade.rio/v1/g
 
 ---
 
-[release-shield]: https://img.shields.io/badge/version-v1.0.0-blue.svg
-[release]: https://github.com/yourusername/rio-bus-tracker/releases
-[project-stage-shield]: https://img.shields.io/badge/project%20stage-stable-green.svg
-[maintenance-shield]: https://img.shields.io/badge/maintainer-%40yourusername-blue.svg
-[license-shield]: https://img.shields.io/badge/license-MIT-yellow.svg
-[license]: https://opensource.org/licenses/MIT
+[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
+[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
